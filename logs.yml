@@ -1,0 +1,21 @@
+---
+# Collect Logs
+- name: Collect logs 
+  hosts: all
+  become: yes # to run with the root access 
+  tasks:
+    - name: Copy current boot's logs to file
+      shell: "journalctl -b 0 > /tmp/journalctl" # this module is used to run commands on shell environment
+    - name: Compress log file 
+      archive: 
+        path: "/tmp/journalctl"
+        dest: "/tmp/journalctl.tar.bz2" 
+        format: bz2
+        remove: true 
+        force_archive: true 
+    - name: Copy the archive file to the controller 
+      fetch:
+        src: "/tmp/journalctl.tar.bz2"
+        dest: "/home/ansible/ansible/logs/journalctl-{{ ansible_hostname }}.tar.bz2"        
+        flat: true 
+      
