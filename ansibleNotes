@@ -1,0 +1,82 @@
+Pre ansible setup requirments:
+
+- "ansible" user on every node. 
+- "ansible" user is sudoer and able to use sudo without passwords. 
+- "ansible" user is able to ssh all control node to manage node without a password.
+- ansible package installed on the control node.
+
+1. on the controller node:
+
+useradd -m ansible
+passwd ansible
+
+ssh-keygen 
+
+cat .ssh/id_rsa.pub 
+
+
+on the target node 
+useradd -m ansible
+and you can put the ansible user as the sudoer user by visudo
+
+2. copy the public key from the controller node and paste it into the target node on .ssh/authorized_keys
+
+on the target node execute below also:
+ chmod 700 .ssh/
+ chmod 600 .ssh/authorized_keys
+ # then you will be able to access the target node from controller node without password
+ 
+3. to be able to ssh the target node without putting the ip address "Just the hostname" 
+
+vi /etc/hosts/ 
+
+then add the IP and the hostname on the target node such below:
+
+127.0.0.1   ansible-controller localhost.localdomain localhost4 localhost4.localdomain4
+::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+192.168.1.104	ansible-target1
+
+ 
+----------------------
+the inventory is responsible for adding all the hosts inside it.
+
+
+you can test the connection with other servers by execute below command on the
+ansible all -m ping 
+# ping is a module to test the connection with other servers.
+ansible all -m setup
+# this command will show all the setup on the target nodes inside all host
+
+
+Example let say that we want to get the logs from one of our target node and pulled them to the control node for backups or archiveing purposes 
+lets say you want to do it as the file system level you will create a file that have a journalctl for the current boot which is include a lot usefull information. So we can do that by something called playbook, the way that you execute tasks in ansible is with modules but the module itself is just a tool that you can use and it typically part of a task and task is part of play just like below:
+
+- playbook
+  - play # inside the playbook we can spcifed multipul plays
+    - task # the task has only contains one module
+      - module
+    - task 
+      - module
+  - play 
+    - task
+      - module
+----------------------
+play --> each instance of play plays are where you spcify which hosts you want to run something againts.        
+task --> where you can configure conditionals such as i want only run this task if this host that im currently operating on is running xyz OS 
+and sometime you can say that i want to run this task and i want to loop through it several times with different pieaces of input information.
+----------------------
+note: a playbook is a list of plays 
+----------------------
+shell module --> is used to run commands on shell environment
+ansible-doc -s <name of the module> --> this will show you basic example of the used module.
+fetch module--> is like the copy module but the fetch module can be works from the managed node not like the copy module
+
+ansible-playbook ./logs.yml 
+                  <playbook file>  
+
+
+
+
+
+
+
