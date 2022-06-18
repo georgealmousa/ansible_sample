@@ -1,0 +1,19 @@
+---
+- name: Update the debian server 
+  hosts: debian
+  become: true
+  tasks: # no need to name the task 
+    - apt: 
+        update_cache: yes
+        upgrade: full
+        autoremove: yes
+
+- name: Update centos server
+  hosts: centos
+  become: true
+  tasks: 
+    - yum: 
+        update_cache: yes 
+        name: "*" 
+        state: latest
+        autoremove: no

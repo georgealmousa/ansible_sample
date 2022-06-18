@@ -1,0 +1,9 @@
+all:
+  children:
+    centos:
+      hosts:
+        ansible-target1: 
+    debian:
+      hosts: 
+        debian1:
+          ansible_sudo_pass: "ZGFyayBzbWlsZQ=="
